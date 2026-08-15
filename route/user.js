@@ -12,18 +12,21 @@ router.get('/signup', (req, res) => {
 });
 router.post('/signin', async (req, res) => {
     const { Email, Password } = req.body;
-
-  const user = await User.matchPassword(Email, Password);
-
-    console.log("User", user);
-    return res.redirect('/');
-    // try {
-    //     const user = await User.matchPassword(Email, Password);
-    //     return res.redirect('/user/dashboard');
-    // } catch (error) {
-    //     return res.status(400).send(error.message);
-    // }
+    try {
+        const token = await User.matchPasswordAndGenerateToken(Email, Password);
+        return res.cookie('token', token).redirect('/');
+    } catch (error) {
+        return res.render("signin", {
+            error: "Incorrect email or password",
+        });
+    }
 });
+
+router.get('/logout', (req, res) => {
+    res.clearCookie("token").redirect("/")
+})
+
+
 router.post('/signup', async (req, res) => {
     const { Fullname, Email, Password } = req.body;
     await User.create({ Fullname, Email, Password });
