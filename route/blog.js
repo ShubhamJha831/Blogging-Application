@@ -9,7 +9,7 @@ const router = Router();
 
 const storage = multer.diskStorage({
  destination: function (req, file, cb) {
-    const uploadPath = path.resolve(`./public/uplodes/${req.user._id}`);
+    const uploadPath = path.resolve(`./public/uploads/uplodes/${req.user._id}`);
 
     fs.mkdirSync(uploadPath, { recursive: true });
 
@@ -28,15 +28,16 @@ router.get('/add-new', (req, res) => {
         user: req.user,
     });
 });
-router.post('/',  upload.single('coverImage'), async(req, res) => {
+router.post('/', upload.single('coverImage'), async(req, res) => {
     const { title, body } = req.body;
     const blog = await Blog.create({
         body,
         title,
         createdBy: req.user._id,
-        coverImage: `/uplodes/${req.file.filename}`
+        coverImageURL: `/uploads/uplodes/${req.user._id}/${req.file.filename}`
     })
-    return res.redirect(`/blog/${blog._id}`);
+    return res.redirect('/');
+    //return res.redirect(`/blog/${blog._id}`);
 });
 
 module.exports = router;

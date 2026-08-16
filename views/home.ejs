@@ -3,14 +3,26 @@
 
 <head>
     <%- include ('./partials/head') %>
-    <title>HomePage</title>
+        <title>HomePage</title>
 </head>
 
 <body>
 
-<%- include ('./partials/nav') %>
-<pre><%= JSON.stringify(user, null, 2) %></pre>
- <%- include ('./partials/Scripts') %>  
+    <%- include ('./partials/nav') %>
+        <div class="container mt-3">
+            <% blogs.forEach(blog => { %>
+                <div class="card" style="width: 18rem;">
+                    <img src="<%= blog.coverImageURL %>" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <%= blog.title %>
+                        </h5>
+                        <a href="/blog/<%= blog._id %>" class="btn btn-primary">View</a>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+        <%- include ('./partials/Scripts') %>
 </body>
 
 </html>
