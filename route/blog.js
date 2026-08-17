@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs'); 
 
 const Blog = require("../models/blog")
+const Comment = require("../models/comment")
 
 const router = Router();
 
@@ -28,6 +29,41 @@ router.get('/add-new', (req, res) => {
         user: req.user,
     });
 });
+
+router.get('/:id', async (req, res) => {
+
+    console.log("ID:", req.params.id);
+
+    const blog = await Blog.findById(req.params.id);
+    const comments = await Comment.find({ blogId: req.params.id }).populate("createdBy")
+
+    console.log("BLOG BEFORE POPULATE:", blog);
+
+    const populatedBlog = await Blog.findById(req.params.id)
+        .populate('createdBy');
+
+    console.log("BLOG AFTER POPULATE:", populatedBlog);
+    
+    console.log("comments", comments );
+
+    return res.render("blog", {
+        user: req.user,
+        blog: populatedBlog,
+        comments,
+    });
+});
+
+router.post('/comment/:blogId', async(req, res) => {
+    await Comment.create({
+        content: req.body.content,
+        blogId: req.params.blogId,
+        createdBy: req.user._id,
+    });
+
+    return res.redirect(`/blog/${req.params.blogId}`);
+});
+
+
 router.post('/', upload.single('coverImage'), async(req, res) => {
     const { title, body } = req.body;
     const blog = await Blog.create({

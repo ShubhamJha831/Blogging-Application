@@ -21,7 +21,7 @@ const userSchema = new Schema({
     },
     profileImageURL: {
         type: String,
-        default: '/images/default.png',
+        default: '/image/default.png',
     },
     role: {
         type: String,
@@ -31,7 +31,7 @@ const userSchema = new Schema({
 }, { timestamps: true }
 );
 
-userSchema.pre("save", function (){
+userSchema.pre("save", function () {
     const user = this;
 
     if (!user.isModified("Password")) {
@@ -44,15 +44,15 @@ userSchema.pre("save", function (){
 
     this.salt = salt;
     this.Password = hashedPassword;
-    
+
 });
 
 userSchema.static("matchPasswordAndGenerateToken", async function (Email, Password) {
     const user = await this.findOne({ Email });
     if (!user) throw new Error('Invalid email or password');
-     
+
     const salt = user.salt;
-    const  hashedPassword = user.Password;
+    const hashedPassword = user.Password;
 
     const userProvidedHash = createHmac('sha256', salt).update(Password).digest('hex');
     if (userProvidedHash !== hashedPassword) throw new Error('Invalid password');
